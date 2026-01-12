@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,18 +12,19 @@
             background-color: #ffe6f2;
             background-image: radial-gradient(#ffc0cb 3px, transparent 3px);
             background-size: 30px 30px;
-            
-            height: 100dvh; 
+
+            height: 100dvh;
             width: 100vw;
-            
+
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             margin: 0;
-            overflow: hidden; 
+            overflow: hidden;
             touch-action: manipulation;
-            -webkit-user-select: none; /* Disable text selection */
+            -webkit-user-select: none;
+            /* Disable text selection */
             user-select: none;
         }
 
@@ -41,9 +43,10 @@
             background: white;
             width: 85%;
             max-width: 400px;
-            height: 60vh; /* Takes up most of the screen */
+            height: 60vh;
+            /* Takes up most of the screen */
             max-height: 500px;
-            
+
             border-radius: 30px;
             box-shadow: 0 15px 40px rgba(214, 51, 132, 0.25);
             display: flex;
@@ -56,7 +59,7 @@
             background-color: #fff0f5;
             cursor: pointer;
             transition: transform 0.1s;
-            
+
             /* Visual cue that it's clickable */
             -webkit-tap-highlight-color: transparent;
         }
@@ -68,7 +71,7 @@
 
         /* The Sight Word Text */
         #word-display {
-            font-size: clamp(4rem, 18vw, 7rem); 
+            font-size: clamp(4rem, 18vw, 7rem);
             font-weight: bold;
             color: #333;
             text-align: center;
@@ -76,20 +79,13 @@
             line-height: 1.1;
         }
 
-        /* The Reward Image */
-        #reward-image {
-            display: none; /* Hidden initially */
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Fills the card nicely */
-        }
-
-        /* The "Loading" spinner for when internet is slow */
-        #loading-text {
+        /* The Reward Emoji */
+        #reward-emoji {
             display: none;
-            font-size: 1.5rem;
-            color: #ff69b4;
-            animation: pulse 1s infinite;
+            font-size: clamp(8rem, 25vw, 12rem);
+            text-align: center;
+            line-height: 1;
+            padding: 20px;
         }
 
         /* Helper text at bottom */
@@ -103,34 +99,37 @@
 
         /* Animations */
         @keyframes pulse {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         .sparkle {
             position: absolute;
-            width: 15px;
-            height: 15px;
-            background-color: gold;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
             animation: fall linear forwards;
             z-index: 100;
-            pointer-events: none; 
+            pointer-events: none;
         }
 
         @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <h1>✨ Claire's Word Party ✨</h1>
 
     <div class="card-container" onclick="handleCardClick()">
         <div id="word-display">Start</div>
-        <div id="loading-text">Finding a cat... 🐱</div>
-        <img id="reward-image" src="" alt="Cat Reward">
+        <div id="reward-emoji">💩</div>
     </div>
 
     <div class="instruction">(Tap the card to play)</div>
@@ -138,18 +137,17 @@
     <script>
         /* --- DATA --- */
         const words = [
-            "a", "and", "big", "blue", "can", "come", "down", "find", "for", "funny", 
-            "go", "help", "here", "I", "in", "is", "it", "jump", "little", "look", 
-            "make", "me", "my", "not", "one", "play", "red", "run", "said", "see", 
+            "a", "and", "big", "blue", "can", "come", "down", "find", "for", "funny",
+            "go", "help", "here", "I", "in", "is", "it", "jump", "little", "look",
+            "make", "me", "my", "not", "one", "play", "red", "run", "said", "see",
             "the", "three", "to", "two", "up", "we", "where", "yellow", "you"
         ];
 
         /* --- STATE MANAGEMENT --- */
         let isShowingReward = false;
-        
+
         const wordDisplay = document.getElementById('word-display');
-        const rewardImage = document.getElementById('reward-image');
-        const loadingText = document.getElementById('loading-text');
+        const rewardEmoji = document.getElementById('reward-emoji');
         const card = document.querySelector('.card-container');
 
         // Initial Start
@@ -168,17 +166,16 @@
         }
 
         function pickNewWord() {
-            // Hide Image & Loading
-            rewardImage.style.display = 'none';
-            loadingText.style.display = 'none';
-            
+            // Hide Emoji
+            rewardEmoji.style.display = 'none';
+
             // Show Word
             wordDisplay.style.display = 'block';
 
             // Random Word Logic
             const randomIndex = Math.floor(Math.random() * words.length);
             wordDisplay.innerText = words[randomIndex];
-            
+
             // Reset border color to pink
             card.style.borderColor = "#ff69b4";
         }
@@ -186,44 +183,28 @@
         function showReward() {
             // Hide Word
             wordDisplay.style.display = 'none';
-            
-            // Show "Loading" briefly (better UX)
-            loadingText.style.display = 'block';
+
+            // Show Emoji
+            rewardEmoji.style.display = 'block';
 
             // CHANGE BORDER TO GREEN FOR SUCCESS
             card.style.borderColor = "#20c997";
 
-            // GENERATE UNIQUE CAT URL
-            // We add a timestamp (?t=...) to force the browser to get a NEW image every time
-            // "loremflickr" is a great service for random kittens
-            const uniqueId = new Date().getTime();
-            const newCatUrl = `https://loremflickr.com/500/500/kitten?lock=${uniqueId}`;
-
-            // Preload image so it doesn't pop in weirdly
-            const img = new Image();
-            img.onload = function() {
-                loadingText.style.display = 'none';
-                rewardImage.src = newCatUrl;
-                rewardImage.style.display = 'block';
-                createSparkles();
-            };
-            // If image fails, just use a backup
-            img.onerror = function() {
-                loadingText.style.display = 'none';
-                rewardImage.src = "https://cataas.com/cat"; // Backup source
-                rewardImage.style.display = 'block';
-            };
-            img.src = newCatUrl;
+            createSparkles();
         }
 
         function createSparkles() {
-            const colors = ['#ffd700', '#ff69b4', '#00ffff', '#ff1493'];
             for (let i = 0; i < 40; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.classList.add('sparkle');
+                sparkle.innerText = '💩';
                 sparkle.style.left = Math.random() * 100 + 'vw';
-                sparkle.style.top = '-20px';
-                sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                sparkle.style.top = '-50px';
+
+                // Random size
+                const size = Math.random() * 30 + 20; // 20px to 50px
+                sparkle.style.fontSize = size + 'px';
+
                 sparkle.style.animationDuration = (Math.random() * 2 + 1) + 's';
                 document.body.appendChild(sparkle);
 
@@ -234,4 +215,5 @@
         }
     </script>
 </body>
+
 </html>
