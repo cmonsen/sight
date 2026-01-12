@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claire's Word Party!</title>
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #ffe6f2;
+            /* Polka dot background pattern */
+            background-image: radial-gradient(#ffc0cb 3px, transparent 3px);
+            background-size: 40px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0px white;
+            text-align: center;
+        }
+
+        .card-container {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            height: 450px; /* Taller to fit images better */
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(214, 51, 132, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 6px solid #ff69b4;
+            overflow: hidden;
+        }
+
+        /* The Sight Word Text */
+        #word-display {
+            font-size: 5.5rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            user-select: none; /* Prevents highlighting text */
+        }
+
+        /* The Reward Image */
+        #reward-image {
+            display: none;
+            max-width: 95%;
+            max-height: 85%;
+            border-radius: 15px;
+            border: 4px solid #b19cd9; /* Pastel Purple border */
+            object-fit: contain; /* Keeps image from stretching */
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        /* Buttons */
+        .btn-container {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.6rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+            font-weight: bold;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        #check-btn {
+            background-color: #20c997; /* Minty Green */
+            color: white;
+        }
+
+        #next-btn {
+            background-color: #ff69b4; /* Hot Pink */
+            color: white;
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes zoomIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: fall linear forwards;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Claire's Word Party ✨</h1>
+
+    <div class="card-container">
+        <div id="word-display">Start</div>
+        <img id="reward-image" src="" alt="Good Job!">
+    </div>
+
+    <div class="btn-container">
+        <button id="check-btn" onclick="showReward()">I Read It! ✅</button>
+        <button id="next-btn" onclick="nextWord()">Next Word ➡️</button>
+    </div>
+
+    <script>
+        /* --- POPULATED DATA --- */
+
+        // 1. DOLCH SIGHT WORDS (Pre-K & Kindergarten Mix)
+        const words = [
+            // Pre-K
+            "a", "and", "big", "blue", "can", "come", "down", "find", "for", "funny", 
+            "go", "help", "here", "I", "in", "is", "it", "jump", "little", "look", 
+            "make", "me", "my", "not", "one", "play", "red", "run", "said", "see", 
+            "the", "three", "to", "two", "up", "we", "where", "yellow", "you",
+            // Kindergarten
+            "all", "am", "are", "at", "ate", "be", "black", "brown", "but", "came", 
+            "did", "do", "eat", "four", "get", "good", "have", "he", "like", "must", 
+            "new", "no", "now", "on", "our", "out", "please", "pretty", "ride", "saw", 
+            "say", "she", "so", "soon", "that", "there", "they", "this", "too", "under", 
+            "want", "was", "well", "went", "what", "white", "who", "will", "with", "yes"
+        ];
+
+        // 2. REWARD IMAGES
+        // Note: Real Hello Kitty images often break because of copyright protections. 
+        // You can replace the "Cute Cat" links below with real Hello Kitty links you find on Google!
+        const rewards = [
+            // TAYLOR SWIFT (Wikimedia Commons - Stable)
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/191125_Taylor_Swift_at_the_2019_American_Music_Awards_04.jpg/640px-191125_Taylor_Swift_at_the_2019_American_Music_Awards_04.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Taylor_Swift_at_the_2019_American_Music_Awards_%28cropped%29.jpg/640px-Taylor_Swift_at_the_2019_American_Music_Awards_%28cropped%29.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Taylor_Swift_Reputation_Tour_Glendale_2.jpg/640px-Taylor_Swift_Reputation_Tour_Glendale_2.jpg",
+            
+            // CUTE CATS & SPARKLES (Placeholders for Hello Kitty)
+            "https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=600&q=80", // White kitten
+            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&q=80", // Cat with eyes closed
+            "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&q=80", // Cat looking up
+            
+            // PASTE YOUR HELLO KITTY LINKS BELOW THIS LINE:
+            // "https://link-to-hello-kitty.jpg",
+        ];
+
+        /* --- LOGIC --- */
+
+        const wordDisplay = document.getElementById('word-display');
+        const rewardImage = document.getElementById('reward-image');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Initial setup
+        nextWord();
+
+        function nextWord() {
+            // Reset UI
+            rewardImage.style.display = 'none';
+            wordDisplay.style.display = 'block';
+            checkBtn.style.display = 'block';
+            nextBtn.style.display = 'none';
+
+            // Pick random word
+            const randomIndex = Math.floor(Math.random() * words.length);
+            wordDisplay.innerText = words[randomIndex];
+        }
+
+        function showReward() {
+            // Pick random image
+            const randomImgIndex = Math.floor(Math.random() * rewards.length);
+            rewardImage.src = rewards[randomImgIndex];
+
+            // Update UI
+            wordDisplay.style.display = 'none';
+            rewardImage.style.display = 'block';
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+
+            // Trigger Sparkles
+            createSparkles();
+        }
+
+        function createSparkles() {
+            const colors = ['#ffd700', '#ff69b4', '#00ffff', '#ff1493']; // Gold, Pink, Cyan, Deep Pink
+            for (let i = 0; i < 60; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                
+                // Random positioning
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = '-20px';
+                
+                // Random style
+                sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                sparkle.style.animationDuration = (Math.random() * 2 + 1.5) + 's'; // Between 1.5s and 3.5s fall
+                sparkle.style.opacity = Math.random();
+                
+                document.body.appendChild(sparkle);
+
+                // Clean up
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 3500);
+            }
+        }
+    </script>
+</body>
+</html>
