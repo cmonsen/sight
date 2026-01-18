@@ -103,11 +103,12 @@
         .operator { font-size: 2.5rem; font-weight: bold; color: #888; }
         .math-answer { font-size: 4rem; font-weight: bold; color: #333; margin-top: 10px; }
 
-        /* --- BLOCK LOGIC --- */
+        /* --- BLOCK VISUALS --- */
         .block-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
         /* The Grid for Squares/Rectangles */
@@ -115,64 +116,75 @@
             display: grid;
             gap: 2px;
             padding: 2px;
-            background: rgba(0,0,0,0.05); /* Slight shadow behind group */
+            background: rgba(0,0,0,0.05);
             border-radius: 4px;
         }
 
-        /* Default Stack (Vertical) */
-        .stack-col { 
-            grid-template-columns: 1fr; 
-            /* To make them stack bottom-up visually, we often just use flex column-reverse, 
-               but grid works if we order cells correctly. */
-        }
-
-        /* Shape Configurations */
-        .shape-4 { grid-template-columns: repeat(2, 1fr); } /* 2x2 */
-        .shape-6 { grid-template-columns: repeat(2, 1fr); } /* 2 wide, 3 high */
-        .shape-9 { grid-template-columns: repeat(3, 1fr); } /* 3x3 */
+        .stack-col { grid-template-columns: 1fr; }
+        .shape-4 { grid-template-columns: repeat(2, 1fr); } 
+        .shape-6 { grid-template-columns: repeat(2, 1fr); } 
+        .shape-9 { grid-template-columns: repeat(3, 1fr); } 
 
         .block {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 4px;
             border: 1px solid rgba(0,0,0,0.15);
             box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -2px -2px 5px rgba(0,0,0,0.1);
             position: relative;
+            /* Flex for centering internal items (like dice dots) */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: rgba(0,0,0,0.3);
         }
 
-        /* --- FACES --- */
+        /* --- CHARACTER PROPS (The "Face") --- */
         .face-overlay {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             pointer-events: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
             z-index: 5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        
+        /* Specific adjustments for props */
+        .prop-glasses { font-size: 40px; margin-top: -5px; } /* 2 */
+        .prop-star { font-size: 35px; color: yellow; text-shadow: 0 0 5px orange; } /* 5 */
+        .prop-tentacle { font-size: 45px; opacity: 0.9; } /* 8 */
+        .prop-dice { font-size: 35px; } /* 6 */
+        .prop-cyclops { font-size: 25px; } /* 1 */
+        .prop-standard { font-size: 25px; } /* Default Eyes */
 
-        /* --- COLORS (Numberblock Palette) --- */
-        .bg-1 { background: #ff4d4d; } /* Red */
-        .bg-2 { background: #ff9f43; } /* Orange */
-        .bg-3 { background: #feca57; } /* Yellow */
-        .bg-4 { background: #1dd1a1; } /* Green */
-        .bg-5 { background: #54a0ff; } /* Blue */
-        .bg-6 { background: #5f27cd; } /* Purple */
-        .bg-7 { background: #ff9ff3; } /* Pink base */
-        .bg-8 { background: #ff00d4; } /* Magenta */
-        .bg-9 { background: #c8d6e5; } /* Grey */
+        /* --- COLORS & SPECIAL TEXTURES --- */
+        .bg-1 { background: #ff4d4d; } 
+        .bg-2 { background: #ff9f43; } 
+        .bg-3 { background: #feca57; } 
+        .bg-4 { background: #1dd1a1; } 
+        .bg-5 { background: #54a0ff; } 
+        .bg-6 { background: #5f27cd; } 
+        .bg-7 { background: #ff9ff3; } 
+        .bg-8 { background: #ff00d4; } 
+        .bg-9 { background: #c8d6e5; } 
         .bg-10 { background: white; border: 2px solid #ff4d4d; }
 
-        /* Rainbow Logic for Number 7 */
-        /* We target the blocks inside a wrapper marked as number-7 */
-        .number-7 .block:nth-child(1) { background: #ff4d4d; } /* Red */
-        .number-7 .block:nth-child(2) { background: #ff9f43; } /* Orange */
-        .number-7 .block:nth-child(3) { background: #feca57; } /* Yellow */
-        .number-7 .block:nth-child(4) { background: #1dd1a1; } /* Green */
-        .number-7 .block:nth-child(5) { background: #54a0ff; } /* Blue */
-        .number-7 .block:nth-child(6) { background: #5f27cd; } /* Indigo */
-        .number-7 .block:nth-child(7) { background: #ff00d4; } /* Violet */
+        /* Rainbow Logic for 7 */
+        .number-7 .block:nth-child(1) { background: #ff4d4d; } 
+        .number-7 .block:nth-child(2) { background: #ff9f43; } 
+        .number-7 .block:nth-child(3) { background: #feca57; } 
+        .number-7 .block:nth-child(4) { background: #1dd1a1; } 
+        .number-7 .block:nth-child(5) { background: #54a0ff; } 
+        .number-7 .block:nth-child(6) { background: #5f27cd; } 
+        .number-7 .block:nth-child(7) { background: #ff00d4; }
+
+        /* Jester Buttons for 3 */
+        .number-3 .block:nth-child(2)::after { content: "🔴"; font-size: 12px; }
+        .number-3 .block:nth-child(1)::after { content: "🔵"; font-size: 12px; }
 
         /* --- REWARD SYSTEM --- */
         #reward-image {
@@ -310,19 +322,16 @@
             isShowingMathAnswer = false;
             mathText.style.color = "#333";
             
-            // Limit numbers to max 10 for better rendering
+            // Limit numbers for better rendering
             isAddition = Math.random() > 0.4;
             
             if (isAddition) {
-                // Ensure sum <= 10
                 currentNum1 = Math.floor(Math.random() * 5) + 1; 
                 currentNum2 = Math.floor(Math.random() * (10 - currentNum1)) + 1;
                 if(currentNum2 === 0) currentNum2 = 1;
-                
                 mathText.innerText = `${currentNum1} + ${currentNum2} = ?`;
                 renderMathVisuals(currentNum1, currentNum2, '+');
             } else {
-                // Ensure result > 0
                 currentNum1 = Math.floor(Math.random() * 5) + 2; 
                 currentNum2 = Math.floor(Math.random() * (currentNum1 - 1)) + 1;
                 mathText.innerText = `${currentNum1} - ${currentNum2} = ?`;
@@ -336,7 +345,6 @@
             mathText.innerText = `${isAddition ? '+' : '-'}  ${ans} !`;
             mathText.style.color = "#d63384";
             
-            // Show only the answer blocks
             mathVisuals.innerHTML = '';
             mathVisuals.appendChild(createNumberBlock(ans));
             instruction.innerText = "(Tap for a cat!)";
@@ -357,7 +365,7 @@
         /* --- NUMBER BLOCK RENDERER --- */
         function createNumberBlock(num) {
             const wrapper = document.createElement('div');
-            wrapper.className = `block-wrapper number-${num}`; // Class to target Number 7 colors
+            wrapper.className = `block-wrapper number-${num}`; 
             
             const grid = document.createElement('div');
             grid.className = 'block-grid';
@@ -372,21 +380,49 @@
             for (let i = 0; i < num; i++) {
                 const block = document.createElement('div');
                 block.className = `block bg-${num}`;
+                
+                // Add dots/pips for Number 6
+                if(num === 6) {
+                    block.innerHTML = "•"; 
+                    block.style.fontSize = "16px";
+                    block.style.color = "rgba(255,255,255,0.5)";
+                }
+                
                 grid.appendChild(block);
             }
             
             wrapper.appendChild(grid);
 
-            // ADD FACE (Position relative to the whole group)
+            // CHARACTER PROPS (Faces)
             const face = document.createElement('div');
             face.className = 'face-overlay';
-            // Logic: 1 has one eye, others have two eyes
-            face.innerText = (num === 1) ? "👁️" : "👀"; 
             
-            // Special fix for shapes: center the face
-            wrapper.style.position = 'relative';
+            // Customize the "Costume" based on the number
+            if (num === 1) {
+                face.innerText = "👁️"; // Cyclops
+                face.classList.add('prop-cyclops');
+            } else if (num === 2) {
+                face.innerText = "👓"; // Glasses
+                face.classList.add('prop-glasses');
+            } else if (num === 3) {
+                // 3 usually has eyes, but we added buttons in CSS. Let's give simple eyes.
+                face.innerText = "👀"; 
+                face.classList.add('prop-standard');
+            } else if (num === 5) {
+                face.innerText = "⭐"; // High Five Star
+                face.classList.add('prop-star');
+            } else if (num === 6) {
+                face.innerText = "🎲"; // Game/Dice
+                face.classList.add('prop-dice');
+            } else if (num === 8) {
+                face.innerText = "🐙"; // Octoblock
+                face.classList.add('prop-tentacle');
+            } else {
+                face.innerText = "👀"; // Standard Eyes
+                face.classList.add('prop-standard');
+            }
+            
             wrapper.appendChild(face);
-
             return wrapper;
         }
 
@@ -395,7 +431,6 @@
             isShowingReward = true;
             loadingText.style.display = 'block';
             
-            // Timestamp prevents caching
             const newCatUrl = `https://loremflickr.com/500/500/kitten?lock=${new Date().getTime()}`;
             
             const img = new Image();
