@@ -3,37 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Claire's Cloud App</title>
+    <title>Claire's Learning Cloud</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        /* --- GLOBAL --- */
+        /* --- GLOBAL STYLES --- */
         body {
             font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
             background-color: #ffe6f2;
             background-image: radial-gradient(#ffc0cb 3px, transparent 3px);
             background-size: 30px 30px;
-            height: 100dvh; width: 100vw;
-            display: flex; flex-direction: column; align-items: center;
-            margin: 0; overflow: hidden; 
-            touch-action: manipulation; user-select: none; -webkit-user-select: none;
+            height: 100dvh; 
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            overflow: hidden; 
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* --- NAV --- */
+        /* --- NAV BAR --- */
         .nav-bar {
-            display: flex; gap: 10px; margin-top: 15px; margin-bottom: 10px; z-index: 10;
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            z-index: 10;
         }
+        
         .mode-btn {
-            padding: 8px 15px; border-radius: 20px; border: none;
-            font-size: 1rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: transform 0.1s;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
+        
         .btn-active { border: 3px solid white; transform: scale(1.05); }
         #btn-abc { background-color: #ff69b4; color: white; }
         #btn-123 { background-color: #20c997; color: white; }
-        
-        /* Parent Zone Button */
         #btn-admin { background-color: #6c757d; color: white; font-size: 1.2rem; padding: 5px 12px; }
 
         /* --- PARENT ZONE OVERLAY --- */
@@ -45,30 +61,60 @@
         .admin-box {
             background: white; padding: 20px; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; border: 4px solid #ff69b4;
-            width: 80%; max-width: 300px;
+            width: 85%; max-width: 350px; max-height: 80vh; display: flex; flex-direction: column;
         }
         .admin-input {
-            width: 90%; padding: 10px; font-size: 1.2rem; margin: 10px 0;
+            width: 80%; padding: 10px; font-size: 1.2rem; margin: 10px auto;
             border: 2px solid #ddd; border-radius: 10px; text-align: center;
         }
-        .btn-add { background-color: #20c997; color: white; width: 100%; padding: 10px; font-size: 1.2rem; border: none; border-radius: 10px; margin-top: 5px; }
-        .btn-close { margin-top: 20px; background: none; border: none; color: #888; text-decoration: underline; font-size: 1rem; }
-        #word-count-display { margin-top: 10px; font-size: 0.9rem; color: #666; }
+        .btn-add { background-color: #20c997; color: white; width: 100%; padding: 10px; font-size: 1.2rem; border: none; border-radius: 10px; margin-top: 5px; cursor: pointer; }
+        .btn-close { margin-top: 15px; background: none; border: none; color: #888; text-decoration: underline; font-size: 1rem; cursor: pointer; }
+        
+        /* Scrollable Word List */
+        #word-list-container {
+            margin-top: 15px; flex-grow: 1; overflow-y: auto; text-align: left;
+            border-top: 2px solid #eee; padding-top: 10px;
+        }
+        .word-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 1.1rem; color: #555;
+        }
+        .btn-delete {
+            background: #ff4d4d; color: white; border: none; border-radius: 5px;
+            padding: 5px 10px; font-size: 0.9rem; cursor: pointer;
+        }
 
-        /* --- CARD --- */
+        /* --- MAIN CARD --- */
         .card-container {
-            background: white; width: 85%; max-width: 450px; height: 55vh; 
-            border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0, 0.1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; border: 8px solid #ff69b4; overflow: hidden;
-            background-color: #fff0f5; cursor: pointer; -webkit-tap-highlight-color: transparent;
+            background: white;
+            width: 85%;
+            max-width: 450px;
+            height: 55vh; 
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 8px solid #ff69b4; 
+            overflow: hidden;
+            background-color: #fff0f5;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
             transition: border-color 0.3s;
         }
 
         /* --- FEEDBACK BUTTONS --- */
         .feedback-area {
-            display: none; flex-direction: row; gap: 20px; margin-top: 20px; width: 90%; justify-content: center;
+            display: none; 
+            flex-direction: row;
+            gap: 20px;
+            margin-top: 20px;
+            width: 90%;
+            justify-content: center;
         }
+
         .action-btn {
             flex: 1; padding: 15px; border-radius: 20px; border: none;
             font-size: 1.2rem; font-weight: bold; color: white;
@@ -78,39 +124,73 @@
         .btn-hard { background-color: #ff9f43; } 
         .btn-easy { background-color: #20c997; } 
 
-        /* --- CONTENT --- */
+        /* --- CONTENT DISPLAY --- */
         #word-display {
-            font-size: clamp(3.5rem, 15vw, 6rem); font-weight: bold; color: #333; text-align: center; line-height: 1.1; display: none; 
+            font-size: clamp(3.5rem, 15vw, 6rem); 
+            font-weight: bold; color: #333; text-align: center; line-height: 1.1;
+            display: none; 
         }
+
         #math-display { display: none; flex-direction: column; align-items: center; width: 100%; }
         .math-text { font-size: 3rem; font-weight: bold; color: #333; margin-top: 15px; }
 
-        /* --- NUMBERBLOCKS --- */
+        /* --- NUMBERBLOCKS VISUALS --- */
         .block-wrapper { display: flex; flex-direction: column; align-items: center; position: relative; }
         .block-grid { display: grid; gap: 2px; padding: 2px; background: rgba(0,0,0,0.05); border-radius: 4px; }
+        
         .stack-col { grid-template-columns: 1fr; }
-        .shape-4, .shape-6 { grid-template-columns: repeat(2, 1fr); } .shape-9 { grid-template-columns: repeat(3, 1fr); } 
-        .block { width: 32px; height: 32px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -2px -2px 5px rgba(0,0,0,0.1); position: relative; display: flex; align-items: center; justify-content: center; }
-        .face-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .prop-glasses { font-size: 40px; margin-top: -5px; } .prop-star { font-size: 35px; color: yellow; text-shadow: 0 0 5px orange; } 
-        .prop-tentacle { font-size: 45px; opacity: 0.9; } .prop-dice { font-size: 35px; } .prop-cyclops { font-size: 25px; } 
-        .bg-1 { background: #ff4d4d; } .bg-2 { background: #ff9f43; } .bg-3 { background: #feca57; } .bg-4 { background: #1dd1a1; } .bg-5 { background: #54a0ff; } 
-        .bg-6 { background: #5f27cd; } .bg-7 { background: #ff9ff3; } .bg-8 { background: #ff00d4; } .bg-9 { background: #c8d6e5; } .bg-10 { background: white; border: 2px solid #ff4d4d; }
-        .number-7 .block:nth-child(1) { background: #ff4d4d; } .number-7 .block:nth-child(2) { background: #ff9f43; } .number-7 .block:nth-child(3) { background: #feca57; } 
-        .number-7 .block:nth-child(4) { background: #1dd1a1; } .number-7 .block:nth-child(5) { background: #54a0ff; } .number-7 .block:nth-child(6) { background: #5f27cd; } .number-7 .block:nth-child(7) { background: #ff00d4; }
+        .shape-4, .shape-6 { grid-template-columns: repeat(2, 1fr); } 
+        .shape-9 { grid-template-columns: repeat(3, 1fr); } 
+        
+        .block {
+            width: 32px; height: 32px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15);
+            box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -2px -2px 5px rgba(0,0,0,0.1);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Face & Props */
+        .face-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; display: flex; align-items: center; justify-content: center; z-index: 5;
+        }
+        .prop-glasses { font-size: 40px; margin-top: -5px; } 
+        .prop-star { font-size: 35px; color: yellow; text-shadow: 0 0 5px orange; } 
+        .prop-tentacle { font-size: 45px; opacity: 0.9; } 
+        .prop-dice { font-size: 35px; } 
+        .prop-cyclops { font-size: 25px; } 
+        
+        /* Numberblocks Colors */
+        .bg-1 { background: #ff4d4d; } .bg-2 { background: #ff9f43; } .bg-3 { background: #feca57; } 
+        .bg-4 { background: #1dd1a1; } .bg-5 { background: #54a0ff; } .bg-6 { background: #5f27cd; } 
+        .bg-7 { background: #ff9ff3; } .bg-8 { background: #ff00d4; } .bg-9 { background: #c8d6e5; } 
+        .bg-10 { background: white; border: 2px solid #ff4d4d; }
+        
+        /* Rainbow 7 Logic */
+        .number-7 .block:nth-child(1) { background: #ff4d4d; } .number-7 .block:nth-child(2) { background: #ff9f43; } 
+        .number-7 .block:nth-child(3) { background: #feca57; } .number-7 .block:nth-child(4) { background: #1dd1a1; } 
+        .number-7 .block:nth-child(5) { background: #54a0ff; } .number-7 .block:nth-child(6) { background: #5f27cd; } 
+        .number-7 .block:nth-child(7) { background: #ff00d4; }
 
         /* --- UI EXTRAS --- */
-        .mastery-container { position: absolute; bottom: 10px; width: 60%; height: 8px; background: #eee; border-radius: 10px; overflow: hidden; }
+        .mastery-container {
+            position: absolute; bottom: 10px; width: 60%; height: 8px;
+            background: #eee; border-radius: 10px; overflow: hidden;
+        }
         .mastery-bar { height: 100%; width: 0%; background: #20c997; transition: width 0.5s; }
+
         #reward-image { display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 20; }
         #loading-text { display: none; font-size: 1.5rem; color: #ff69b4; animation: pulse 1s infinite; position: absolute; z-index: 10; }
         .instruction { margin-top: 10px; color: #d63384; font-size: 1rem; opacity: 0.8; pointer-events: none; }
+        #sync-status { position: absolute; top: 5px; right: 10px; font-size: 0.7rem; color: #aaa; }
+
         @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
         .sparkle { position: absolute; width: 15px; height: 15px; background-color: gold; animation: fall linear forwards; z-index: 100; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="sync-status">Wait...</div>
 
     <div class="nav-bar">
         <button id="btn-admin" class="mode-btn" onclick="toggleAdmin()">⚙️</button>
@@ -121,23 +201,27 @@
     <div id="admin-panel">
         <div class="admin-box">
             <h2>Parent Zone</h2>
-            <p>Add a new sight word:</p>
-            <input type="text" id="new-word-input" class="admin-input" placeholder="e.g. Eric" autocomplete="off">
+            <input type="text" id="new-word-input" class="admin-input" placeholder="Type new word..." autocomplete="off">
             <button class="mode-btn btn-add" onclick="addNewWord()">Add Word</button>
-            <div id="word-count-display">Loading words...</div>
+            <div id="word-list-container">
+                <div style="text-align:center; padding:10px;">Loading list...</div>
+            </div>
             <button class="btn-close" onclick="toggleAdmin()">Close</button>
         </div>
     </div>
 
     <div class="card-container" id="main-card" onclick="handleCardClick()">
         <div id="word-display">Loading...</div>
+        
         <div id="math-display">
             <div class="math-equation" id="math-visuals"></div>
             <div class="math-text" id="math-text">2 + 1 = ?</div>
         </div>
+        
         <div class="mastery-container">
             <div class="mastery-bar" id="mastery-bar"></div>
         </div>
+
         <div id="loading-text">Finding a cat... 🐱</div>
         <img id="reward-image" src="" alt="Reward">
     </div>
@@ -147,17 +231,15 @@
         <button class="action-btn btn-easy" onclick="processResult(true)">I Knew It! 🌟</button>
     </div>
 
-    <div class="instruction" id="instruction-text">(Connecting to Cloud...)</div>
+    <div class="instruction" id="instruction-text">(Connecting...)</div>
 
     <script>
         /* =========================================
-           1. PASTE YOUR FIREBASE CONFIG HERE
+           YOUR FIREBASE CONFIG
            ========================================= */
         const firebaseConfig = {
             apiKey: "AIzaSyBC13sAtF9edd8aT5rek0gS3LlWsC4gpKA",
             authDomain: "claire-words.firebaseapp.com",
-            // I constructed this URL based on your project ID. 
-            // If the app doesn't sync, check the "Realtime Database" tab in Firebase for the exact URL.
             databaseURL: "https://claire-words-default-rtdb.firebaseio.com",
             projectId: "claire-words",
             storageBucket: "claire-words.firebasestorage.app",
@@ -165,12 +247,117 @@
             appId: "1:498276572668:web:1f922255a79ed8da68e679"
         };
 
-        /* --- INITIALIZE --- */
+        /* --- 100 SAFE CATS (Curated List) --- */
+        const SAFE_CATS = [
+            "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juvenile_Ragdoll.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/4/4d/Cat_March_2010-1.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/5/5e/Sleeping_cat_on_her_back.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/6/64/Collage_of_Six_Cats-02.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/d/d9/Collage_of_Nine_Cats-02.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/8/8e/Hauskatze_langhaar.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Adorable-animal-cat-20787.jpg/800px-Adorable-animal-cat-20787.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/RedCat_8727.jpg/800px-RedCat_8727.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Tabby_cat_with_blue_eyes-3336879.jpg/800px-Tabby_cat_with_blue_eyes-3336879.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Gustav_chocolate.jpg/800px-Gustav_chocolate.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Kittyply_edit1.jpg/800px-Kittyply_edit1.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Six_weeks_old_cat_%28aka%29.jpg/800px-Six_weeks_old_cat_%28aka%29.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white_cat_in_garden_with_wide_open_eyes.jpg/800px-Cow_female_black_white_cat_in_garden_with_wide_open_eyes.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/British_blue_2009_%28cropped%29.jpg/800px-British_blue_2009_%28cropped%29.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sheba1.jpg/800px-Sheba1.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Cat_tongue_macro.jpg/800px-Cat_tongue_macro.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Red_Kitten_01.jpg/800px-Red_Kitten_01.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Felis_catus-cat_on_snow.jpg/800px-Felis_catus-cat_on_snow.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg/800px-An_up-close_picture_of_a_curious_male_domestic_shorthair_tabby_cat.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Zwei_katzen_spielen_2.jpg/800px-Zwei_katzen_spielen_2.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/800px-Cat_August_2010-4.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Cat_November_2010-1a.jpg/800px-Cat_November_2010-1a.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Cat_cleaning_itself_20080608.jpg/800px-Cat_cleaning_itself_20080608.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Grumpy_Cat_%284803768407%29.jpg/800px-Grumpy_Cat_%284803768407%29.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Cat_face_close_up.jpg/800px-Cat_face_close_up.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Havana_Brown_cat.jpg/800px-Havana_Brown_cat.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Cute_grey_kitten.jpg/800px-Cute_grey_kitten.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Indian_Cat_2.jpg/800px-Indian_Cat_2.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Kitten_in_Rizal_Park%2C_Manila.jpg/800px-Kitten_in_Rizal_Park%2C_Manila.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Youngkitten.JPG/800px-Youngkitten.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Cat_poster_1.jpg/800px-Cat_poster_1.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/June_odd-eyed-cat.jpg/800px-June_odd-eyed-cat.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Birma_Kitten.jpg/800px-Birma_Kitten.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Lilac_Point_Birman_Kitten.jpg/800px-Lilac_Point_Birman_Kitten.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Cat_in_the_snow.JPG/800px-Cat_in_the_snow.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Turkish_Van_Cat.jpg/800px-Turkish_Van_Cat.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Taka_Shiba.jpg/800px-Taka_Shiba.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Munchkin_cat.jpg/800px-Munchkin_cat.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Cat_March_2007-1.jpg/800px-Cat_March_2007-1.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Cat_with_wide_pupils.jpg/800px-Cat_with_wide_pupils.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Gato_en_acecho_02.jpg/800px-Gato_en_acecho_02.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cat_sleep.jpg/800px-Cat_sleep.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Russisk_bl%C3%A5_hane.jpg/800px-Russisk_bl%C3%A5_hane.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Ny_kitten.jpg/800px-Ny_kitten.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Cat_Bathing.jpg/800px-Cat_Bathing.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Cat_cleaning_itself.jpg/800px-Cat_cleaning_itself.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Gato_%282%29.jpg/800px-Gato_%282%29.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Cat_paw_2.jpg/800px-Cat_paw_2.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Wolpertinger.jpg/800px-Wolpertinger.jpg",
+            "https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/617278/pexels-photo-617278.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1170986/pexels-photo-1170986.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1543793/pexels-photo-1543793.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/127028/pexels-photo-127028.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/2558605/pexels-photo-2558605.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/982300/pexels-photo-982300.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/730896/pexels-photo-730896.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/2194261/pexels-photo-2194261.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1056251/pexels-photo-1056251.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1314550/pexels-photo-1314550.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/126407/pexels-photo-126407.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/320014/pexels-photo-320014.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1183434/pexels-photo-1183434.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1560424/pexels-photo-1560424.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1870376/pexels-photo-1870376.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/326875/pexels-photo-326875.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1276553/pexels-photo-1276553.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/2061057/pexels-photo-2061057.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/979247/pexels-photo-979247.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1931367/pexels-photo-1931367.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1643457/pexels-photo-1643457.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/669015/pexels-photo-669015.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/2181171/pexels-photo-2181171.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1120049/pexels-photo-1120049.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/302280/pexels-photo-302280.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/735423/pexels-photo-735423.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/177809/pexels-photo-177809.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/257532/pexels-photo-257532.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1485968/pexels-photo-1485968.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/3777622/pexels-photo-3777622.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/160755/kittens-cats-foster-playing-160755.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/569170/pexels-photo-569170.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/2113566/pexels-photo-2113566.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/96938/pexels-photo-96938.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/691583/pexels-photo-691583.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/747795/pexels-photo-747795.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/3635550/pexels-photo-3635550.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/54632/cat-animal-eyes-grey-54632.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/208984/pexels-photo-208984.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1521304/pexels-photo-1521304.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1383397/pexels-photo-1383397.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.pexels.com/photos/1633522/pexels-photo-1633522.jpeg?auto=compress&cs=tinysrgb&w=800"
+        ];
+
+        /* --- INITIALIZATION --- */
         let db;
-        let wordList = []; // Now dynamic!
+        let wordList = []; 
+        let fullWordData = {}; // Stores ID:Word pairs for deletion
         let userProgress = {};
         
-        // Default Starter Pack (Used only if Database is empty)
+        // Starter Pack
         const STARTER_WORDS = [
             "the", "and", "on", "for", "about", "then", "a", "at", "big", "blue", 
             "can", "come", "down", "find", "funny", "go", "help", "here", "I", "in", 
@@ -186,33 +373,35 @@
             // 1. LISTEN FOR PROGRESS
             db.ref('claire_progress').on('value', (snapshot) => {
                 userProgress = snapshot.val() || {};
+                document.getElementById('sync-status').innerText = "☁️ Cloud On";
             });
 
             // 2. LISTEN FOR WORD LIST
             db.ref('word_list').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    // Convert object {key: "word"} to array ["word"]
+                    fullWordData = data;
                     wordList = Object.values(data);
-                    document.getElementById('word-count-display').innerText = `Total Words: ${wordList.length}`;
+                    renderAdminList(); // Update Parent Zone list
                     
-                    // If this is the first load, start the game
+                    // Init Game if waiting
                     if(document.getElementById('word-display').innerText === "Loading...") {
                         setMode('abc');
                     }
                 } else {
-                    // DATABASE IS EMPTY -> UPLOAD STARTER PACK
+                    // Empty DB? Upload default words
                     uploadStarterPack();
                 }
             });
 
         } catch (e) {
             console.log("Firebase Error", e);
-            wordList = STARTER_WORDS; // Fallback to offline mode
+            document.getElementById('sync-status').innerText = "⚠️ Offline";
+            wordList = STARTER_WORDS;
             setMode('abc');
         }
 
-        /* --- ADMIN FUNCTIONS --- */
+        /* --- PARENT ZONE LOGIC --- */
         function toggleAdmin() {
             const panel = document.getElementById('admin-panel');
             panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
@@ -223,19 +412,35 @@
             const newWord = input.value.trim().toLowerCase();
             
             if (newWord && db) {
-                // Push new word to Firebase
                 db.ref('word_list').push(newWord);
-                alert(`Added "${newWord}"!`);
-                input.value = ""; // Clear input
+                input.value = "";
+                input.focus();
             }
+        }
+
+        function deleteWord(key) {
+            if(confirm("Delete this word?")) {
+                db.ref('word_list/' + key).remove();
+            }
+        }
+
+        function renderAdminList() {
+            const container = document.getElementById('word-list-container');
+            container.innerHTML = ''; 
+
+            // Render list (Newest first)
+            Object.keys(fullWordData).reverse().forEach(key => {
+                const word = fullWordData[key];
+                const div = document.createElement('div');
+                div.className = 'word-item';
+                div.innerHTML = `<span>${word}</span> <button class="btn-delete" onclick="deleteWord('${key}')">Remove</button>`;
+                container.appendChild(div);
+            });
         }
 
         function uploadStarterPack() {
             if(!db) return;
-            console.log("Uploading Starter Pack...");
-            STARTER_WORDS.forEach(word => {
-                db.ref('word_list').push(word);
-            });
+            STARTER_WORDS.forEach(word => db.ref('word_list').push(word));
         }
 
         /* --- GAME LOGIC --- */
@@ -289,8 +494,8 @@
             if (correct) score = Math.min(score + 1, 5); 
             else score = Math.max(score - 1, 0); 
             
-            userProgress[key] = score; // Optimistic update
-            if (db) db.ref('claire_progress').set(userProgress);
+            userProgress[key] = score; // Optimistic local update
+            if (db) db.ref('claire_progress').set(userProgress); // Cloud update
             return score;
         }
 
@@ -301,7 +506,8 @@
             wordList.forEach(word => {
                 const key = 'abc_' + word;
                 const score = getMasteryScore(key);
-                const weight = Math.max(1, (6 - score) * 2); 
+                // Weight Logic: Score 0 = 12 tickets, Score 5 = 2 tickets
+                const weight = Math.max(2, (6 - score) * 2); 
                 for(let i=0; i<weight; i++) pool.push(word);
             });
             return pool[Math.floor(Math.random() * pool.length)];
@@ -344,7 +550,7 @@
                 showReward();
                 createSparkles();
             } else {
-                setTimeout(nextItem, 500);
+                setTimeout(nextItem, 500); // Quick reset for wrong answers
             }
         }
 
@@ -392,12 +598,16 @@
 
         function showReward() {
             loadingText.style.display = 'block'; card.style.pointerEvents = 'none'; 
-            const newCatUrl = `https://loremflickr.com/500/500/kitten?lock=${new Date().getTime()}`;
+            
+            // USE SAFE CATS LIST (No API Risks)
+            const randomCat = SAFE_CATS[Math.floor(Math.random() * SAFE_CATS.length)];
+
             const img = new Image();
-            img.onload = () => { loadingText.style.display = 'none'; rewardImage.src = newCatUrl; rewardImage.style.display = 'block'; setTimeout(nextItem, 2500); };
-            img.onerror = () => { rewardImage.src = "https://cataas.com/cat?width=400"; rewardImage.style.display = 'block'; setTimeout(nextItem, 2500); };
-            img.src = newCatUrl;
+            img.onload = () => { loadingText.style.display = 'none'; rewardImage.src = randomCat; rewardImage.style.display = 'block'; setTimeout(nextItem, 2500); };
+            img.onerror = () => { rewardImage.src = SAFE_CATS[0]; rewardImage.style.display = 'block'; setTimeout(nextItem, 2500); };
+            img.src = randomCat;
         }
+        
         function createSparkles() {
             const colors = ['#ffd700', '#ff69b4', '#00ffff', '#ff1493'];
             for (let i = 0; i < 40; i++) {
